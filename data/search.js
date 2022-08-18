@@ -12,13 +12,11 @@ export async function search(text, company, option, page = 1) {
     if (company === 'kumyoung') {
         category = option === 'title' ? 2 : 7; 
         url = `${KUMYOUNG_BASE}?category=${category}&keyword=${keyword}&s_page=${page}`;
-        console.log(url);
         const songs = await kyGetHTML(url, category);
         return songs;
     } else if (company === 'taejin') {
         category = option === 'title' ? 1 : 2; 
         url = `${TAEJIN_BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&searchOrderType=&searchOrderItem=&intPage=${page}`;
-        console.log(url);
         const songs = await tjGetHTML(url);
         return songs;
     } else return new Error('올바르지 않은 값');
@@ -40,7 +38,7 @@ async function kyGetHTML(url, category) {
             const singer = $(el).find('li.search_chart_tit > .tit:nth-child(2)').text();
             objects.push({num, title, singer});
         });
-        console.log(objects);
+        objects.pop();
         return objects;
     })
     .catch(err => {
