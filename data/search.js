@@ -1,7 +1,8 @@
 import * as cheerio from 'cheerio';
 import axios from 'axios';
+import { response } from 'express';
 
-const KUMYOUNG_BASE = 'https://kysing.kr/search/';
+const KUMYOUNG_BASE = 'https://kygabang.com/chart/search_list_more.php';
 const TAEJIN_BASE = 'https://www.tjmedia.com/tjsong/song_search_list.asp';
 
 export async function search(text, company, option, page = 1) {
@@ -11,10 +12,12 @@ export async function search(text, company, option, page = 1) {
     
     if (company === 'kumyoung') {
         category = option === 'title' ? 2 : 7; 
-        url = `${KUMYOUNG_BASE}?category=${category}&keyword=${keyword}&s_page=${page}`;
-        const songs = await kyGetHTML(url, category);
+        const maxPage = await kyGetPage(keyword, category);
+        url = `${KUMYOUNG_BASE}?page=${page}&val=${keyword}&mode=SongSearch&gb=${category}`
+        const songs = await kyGetHTML(url);
+        songs.push({page: maxPage});
         return songs;
-    } else if (company === 'taejin') {
+    } else if (company === 'taejin') {ß
         category = option === 'title' ? 1 : 2; 
         url = `${TAEJIN_BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&searchOrderType=&searchOrderItem=&intPage=${page}`;
         const songs = await tjGetHTML(url);
@@ -22,7 +25,7 @@ export async function search(text, company, option, page = 1) {
     } else return new Error('올바르지 않은 값');
 }
 
-async function kyGetHTML(url, category) {
+async function kyGetHTML(url) {
     return axios({
         url,
         method: 'GET',
@@ -31,14 +34,14 @@ async function kyGetHTML(url, category) {
         let objects = [];
         const content = response.data;
         const $ = cheerio.load(content);
-        const songs = $(`#search_chart_frm_${category} > div > ul:nth-of-type(n+2)`)
+        const songs = $(`#sectionList4 > div > table > tbody > tr`)
         .each((i, el) => {
-            const num = $(el).find('li.search_chart_num').text();
-            const title = $(el).find('li.search_chart_tit > .tit:nth-child(1)').text();
-            const singer = $(el).find('li.search_chart_tit > .tit:nth-child(2)').text();
+            const num = $(el).find('.search_col02').text();
+            const titleAndSinger = $(el).find('.search_col03').text().split(' / ');
+            const title = titleAndSinger[0];
+            const singer = titleAndSinger[1];
             objects.push({num, title, singer});
         });
-        objects.pop();
         return objects;
     })
     .catch(err => {
@@ -66,5 +69,22 @@ async function tjGetHTML(url) {
     })
     .catch(err => {
         console.error(err);
+    });
+}
+
+async function kyGetPage(keyword, category) {
+    const BASE = 'https://kygabang.com/chart/search_list.php';
+    const url = `${BASE}?mode=SongSearch&val=${keyword}`;
+    const option = category === 2 ? 0 : 1;
+    return axios({
+        url,
+        method: 'GET',
+    })
+    .then(response => {
+        const content = response.data;
+        const $ = cheerio.load(content);
+        const pages = $('#sectionList4 > h3 > span').text().split(')');
+        const pageNum = pages[option].replace(/[^0-9]/g, '');
+        return Math.ceil(parseInt(pageNum) / 20);
     });
 }
