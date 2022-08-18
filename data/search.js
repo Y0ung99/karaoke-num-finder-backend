@@ -1,15 +1,12 @@
 import * as cheerio from 'cheerio';
 import axios from 'axios';
-import iconv from 'iconv-lite';
-import { response } from 'express';
 
 
 const KUMYOUNG_BASE = 'https://kysing.kr/search';
 const TAEJIN_BASE = 'https://www.tjmedia.com/tjsong/song_search_list.asp';
 
-export async function searchTitle(text, company) {
+export async function searchTitle(text, company, page = 1) {
     let url;
-    let page = 1;
     let keyword = encodeURI(text);
     if (company === 'kumyoung') {
         url = `${KUMYOUNG_BASE}?category=2&keyword=${keyword}&s_page=${page}`;
@@ -26,22 +23,22 @@ export async function searchSinger(text, company) {
 }
 
 async function kyGetHTML(url) {
-    axios({
+    return axios({
         url,
         method: 'GET',
     })
     .then(response => {
+        let objects = [];
         const content = response.data;
         const $ = cheerio.load(content);
         const songs = $('#search_chart_frm_2 > div > ul:nth-of-type(n+2)')
         .each((i, el) => {
             const num = $(el).find('li.search_chart_num').text();
-            const title = $(el).find('li.search_chart_tit > span.tit').text();
-            const singer = $(el).find('li.search_chart_tit > span.mo-art').text();
-            console.log(i+1, num, title, singer);
-            // 오브젝트형식으로 리턴하기
+            const title = $(el).find('li.search_chart_tit > .tit:nth-child(1)').text();
+            const singer = $(el).find('li.search_chart_tit > .tit:nth-child(2)').text();
+            objects.push({num, title, singer});
         });
-        console.log(songs);
+        return objects;
     })
     .catch(err => {
         console.error(err);
