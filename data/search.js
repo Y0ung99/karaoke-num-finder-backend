@@ -17,10 +17,12 @@ export async function search(text, company, option, page = 1) {
         const songs = await kyGetHTML(url);
         songs.push({page: maxPage});
         return songs;
-    } else if (company === 'taejin') {ß
-        category = option === 'title' ? 1 : 2; 
+    } else if (company === 'taejin') {
+        category = option === 'title' ? 1 : 2;
+        const maxPage = await tjGetPage(keyword, category); 
         url = `${TAEJIN_BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&searchOrderType=&searchOrderItem=&intPage=${page}`;
         const songs = await tjGetHTML(url);
+        songs.push({page: maxPage});
         return songs;
     } else return new Error('올바르지 않은 값');
 }
@@ -34,7 +36,7 @@ async function kyGetHTML(url) {
         let objects = [];
         const content = response.data;
         const $ = cheerio.load(content);
-        const songs = $(`#sectionList4 > div > table > tbody > tr`)
+        $(`#sectionList4 > div > table > tbody > tr`)
         .each((i, el) => {
             const num = $(el).find('.search_col02').text();
             const titleAndSinger = $(el).find('.search_col03').text().split(' / ');
@@ -58,7 +60,7 @@ async function tjGetHTML(url) {
         let objects = [];
         const content = response.data;
         const $ = cheerio.load(content);
-        const songs = $('#BoardType1 > table > tbody > tr:nth-of-type(n+2)')
+        $('#BoardType1 > table > tbody > tr:nth-of-type(n+2)')
         .each((i, el) => {
             const num = $(el).find('td:nth-child(1)').text();
             const title = $(el).find('td.left').text();
@@ -87,4 +89,30 @@ async function kyGetPage(keyword, category) {
         const pageNum = pages[option].replace(/[^0-9]/g, '');
         return Math.ceil(parseInt(pageNum) / 20);
     });
+}
+
+async function tjGetPage(keyword, category) {
+    let page = 1;
+    const BASE = 'https://www.tjmedia.com/tjsong/song_search_list.asp';
+    while(true) {
+        let url = `${BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&searchOrderType=&searchOrderItem=&intPage=${page}`;
+        let pageNum;
+        page = await axios({
+            url,
+            method: 'GET',
+        })
+        .then(response => {
+            let content = response.data;
+            let $ = cheerio.load(content);
+            let pages = $('#page1 > table > tbody > tr > td > a:nth-last-child(2)').text();
+            pageNum = parseInt(pages.replace(/[^0-9]/g, ''));
+            return pageNum;
+        });
+        if ((pageNum % 10) === 0) {
+            page++;
+        } else if ((pageNum % 10) !== 0) {
+            break;
+        }
+    }
+    return page;
 }
