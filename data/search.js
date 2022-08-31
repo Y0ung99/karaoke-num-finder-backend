@@ -1,6 +1,5 @@
 import * as cheerio from 'cheerio';
 import axios from 'axios';
-import { response } from 'express';
 
 const KUMYOUNG_BASE = 'https://kygabang.com/chart/search_list_more.php';
 const TAEJIN_BASE = 'https://www.tjmedia.com/tjsong/song_search_list.asp';

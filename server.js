@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import 'express-async-errors';
 
 import searchRoute from './router/search.js'; 
+import authRoute from './router/auth.js';
 
 const server = express();
 const corsOption = {
@@ -17,6 +18,7 @@ server.use(cors(corsOption));
 server.use(morgan('tiny'));
 
 server.use('/search', searchRoute);
+server.use('/auth', authRoute);
 // server.use('/chart', chartRoute);
 // server.use('/bookmark', bookmarkRoute);
 
