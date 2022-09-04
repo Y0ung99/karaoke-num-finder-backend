@@ -45,5 +45,3 @@ export async function me(req, res, next) {
 function createJwtToken(id) {
     return jwt.sign({id}, jwtSecretKey, {expiresIn: jwtExpriedDays});
 }
-
-console.log(await bcrypt.hash('q1w2e3r4', 12));

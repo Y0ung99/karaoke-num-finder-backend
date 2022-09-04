@@ -11,5 +11,3 @@ export const config = {
     jwtSaltRounds: parseInt(required('BCRYPT_SALT_ROUNDS')),
     jwtExpriedDays: required('JWT_EXPIRED_DAYS'),
 }
-
-console.log(config.jwtSecretKey);
