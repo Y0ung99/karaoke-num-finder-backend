@@ -6,7 +6,7 @@ import { config } from '../config.js';
 
 const jwtSecretKey = config.jwtSecretKey;
 const jwtExpriedDays = config.jwtExpriedDays;
-const bcryptSaltRounds = config.bcryptSaltRounds;
+const bcryptSaltRounds = config.jwtSaltRounds;
 
 export async function login(req, res) {
     const {username, password} = req.body;
@@ -14,7 +14,6 @@ export async function login(req, res) {
     if (!user) return res.status(401).json({message: '유효하지 않은 유저네임이나 패스워드입니다.'});
     const isVaildPassword = await bcrypt.compare(password, user.password);
     if (!isVaildPassword) return res.status(401).json({message: '유효하지 않은 유저네임이나 패스워드입니다.'});
-
     const token = createJwtToken(user.id);
     res.status(200).json({token, username});
 }
