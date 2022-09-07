@@ -6,6 +6,7 @@ import 'express-async-errors';
 
 import searchRoute from './router/search.js'; 
 import authRoute from './router/auth.js';
+import chartRoute from './router/chart.js';
 
 const server = express();
 const corsOption = {
@@ -19,7 +20,7 @@ server.use(morgan('tiny'));
 
 server.use('/search', searchRoute);
 server.use('/auth', authRoute);
-// server.use('/chart', chartRoute);
+server.use('/chart', chartRoute);
 // server.use('/bookmark', bookmarkRoute);
 
 server.listen(8080);
