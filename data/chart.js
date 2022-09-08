@@ -2,13 +2,9 @@ import * as cheerio from 'cheerio';
 import axios from 'axios';
 
 const KUMYOUNG_BASE = 'https://kygabang.com/chart/';
-// new_daily
-// new_jpop.php
-// new_pop.php
-const TAEJIN_BASE = 'https://www.tjmedia.com/tjsong/song_monthPopular.asp'
-// ?strType=1
-// ?strType=3
-// ?strType=2
+const TAEJIN_BASE = 'https://www.tjmedia.com/tjsong/song_monthPopular.asp';
+const KUMYOUNG_BASE_NEW = 'http://dncenter.ikaraoke.kr/songroom/sh_list.asp?S=S&PTYPE=M';
+const TAEJIN_BASE_NEW = 'https://www.tjmedia.com/tjsong/song_monthNew.asp';
 
 export async function popular(country, company) {
 
@@ -29,13 +25,19 @@ export async function popular(country, company) {
         songs.shift();
         return songs;
     }
-
-    
 }
 
-export async function newsong(country, company) {
-
-    
+export async function newsong(company) {
+    if (company === 'kumyoung') {
+        const songs = await kyGetNew(KUMYOUNG_BASE_NEW);
+        console.log(songs);
+        return songs;
+    } else if (company === 'taejin') {
+        const songs = await tjGetNew(TAEJIN_BASE_NEW)
+        songs.shift();
+        console.log(songs);
+        return songs;
+    }
 }
 
 function kySelectCountry(country) {
@@ -97,6 +99,48 @@ async function tjGetPopular(url) {
             const num = $(el).find('td:nth-child(2)').text();
             const title = $(el).find('td:nth-child(3)').text();
             const singer = $(el).find('td:nth-child(4)').text();
+            objects.push({num, title, singer});
+        });
+        return objects;
+    })
+    .catch(console.error);
+}
+
+async function kyGetNew(url) {
+    return axios({
+        url,
+        method: 'GET',
+    })
+    .then(response => {
+        let objects = [];
+        const content = response.data;
+        const $ = cheerio.load(content);
+        $('#content > div.tblNew > table > tbody > tr')
+        .each((i, el) => {
+            const num = $(el).find('td.songNumber').text();
+            const title = $(el).find('td.subject').attr('title');
+            const singer = $(el).find('td.artist').text().trim();
+            objects.push({num, title, singer});
+        });
+        return objects;
+    })
+    .catch(console.error);
+}
+
+async function tjGetNew(url) {
+    return axios({
+        url,
+        method: 'GET',
+    })
+    .then(response => {
+        let objects = [];
+        const content = response.data;
+        const $ = cheerio.load(content);
+        $('#BoardType1 > table > tbody > tr')
+        .each((i, el) => {
+            const num = $(el).find('td:nth-child(1)').text();
+            const title = $(el).find('td:nth-child(2)').text();
+            const singer = $(el).find('td:nth-child(3)').text();
             objects.push({num, title, singer});
         });
         return objects;
