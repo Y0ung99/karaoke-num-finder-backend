@@ -1,28 +1,44 @@
 import * as cheerio from 'cheerio';
 import axios from 'axios';
+import _ from 'lodash';
 
 const KUMYOUNG_BASE = 'https://kygabang.com/chart/search_list_more.php';
 const TAEJIN_BASE = 'https://www.tjmedia.com/tjsong/song_search_list.asp';
 
-export async function search(text, company, option, page = 1) {
+export async function search(text, company, option) {
     let url;
     let category;
+    let urls = [];
     let keyword = encodeURI(text);
-    
+
     if (company === 'kumyoung') {
         category = option === 'title' ? 2 : 7; 
         const maxPage = await kyGetPage(keyword, category);
-        url = `${KUMYOUNG_BASE}?page=${page}&val=${keyword}&mode=SongSearch&gb=${category}`
-        const songs = await kyGetHTML(url);
-        songs.push({page: maxPage});
-        return songs;
+        for (let page = 1; page <= maxPage; page++) {
+            url = `${KUMYOUNG_BASE}?page=${page}&val=${keyword}&mode=SongSearch&gb=${category}`
+            urls.push(new Promise((resolve) => {
+                resolve(kyGetHTML(url));
+            }));
+        }
+        return Promise.all(urls)
+        .then(result => {
+            return _.uniqBy(result.flat(2), 'num');
+        });
+
     } else if (company === 'taejin') {
         category = option === 'title' ? 1 : 2;
-        const maxPage = await tjGetPage(keyword, category); 
-        url = `${TAEJIN_BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&searchOrderType=&searchOrderItem=&intPage=${page}`;
-        const songs = await tjGetHTML(url);
-        songs.push({page: maxPage});
-        return songs;
+        const maxPage = await tjGetPage(keyword, category);
+        for (let page = 1; page <= maxPage; page++) {
+            url = `${TAEJIN_BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&searchOrderType=&searchOrderItem=&intPage=${page}`;
+            urls.push(new Promise((resolve) => {
+                resolve(tjGetHTML(url));
+            }));
+        }
+        return Promise.all(urls)
+        .then(result => {
+            return _.uniqBy(result.flat(2), 'num');
+        });
+
     } else return new Error('올바르지 않은 값');
 }
 
