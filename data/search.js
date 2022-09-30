@@ -15,13 +15,14 @@ export async function search(text, company, option) {
         category = option === 'title' ? 2 : 7; 
         const maxPage = await kyGetPage(keyword, category);
         for (let page = 1; page <= maxPage; page++) {
-            url = `${KUMYOUNG_BASE}?page=${page}&val=${keyword}&mode=SongSearch&gb=${category}`
+            url = `${KUMYOUNG_BASE}?page=${page}&val=${keyword}&mode=SongSearch&gb=${category}`;
             urls.push(new Promise((resolve) => {
                 resolve(kyGetHTML(url));
             }));
         }
         return Promise.all(urls)
         .then(result => {
+            console.log(result);
             return _.uniqBy(result.flat(2), 'num');
         });
 
@@ -92,7 +93,8 @@ async function tjGetHTML(url) {
 async function kyGetPage(keyword, category) {
     const BASE = 'https://kygabang.com/chart/search_list.php';
     const url = `${BASE}?mode=SongSearch&val=${keyword}`;
-    const option = category === 2 ? 0 : 1;
+    let option = category === 2 ? 0 : 1;
+
     return axios({
         url,
         method: 'GET',
@@ -101,6 +103,10 @@ async function kyGetPage(keyword, category) {
         const content = response.data;
         const $ = cheerio.load(content);
         const pages = $('#sectionList4 > h3 > span').text().split(')');
+        if (pages.length === 2 && option === 1) {
+            option = 0;
+        }
+        console.log(pages.length);
         const pageNum = pages[option].replace(/[^0-9]/g, '');
         return Math.ceil(parseInt(pageNum) / 20);
     });
@@ -109,6 +115,7 @@ async function kyGetPage(keyword, category) {
 async function tjGetPage(keyword, category) {
     let page = 1;
     const BASE = 'https://www.tjmedia.com/tjsong/song_search_list.asp';
+    console.log('category', category);
     while(true) {
         let url = `${BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&searchOrderType=&searchOrderItem=&intPage=${page}`;
         let pageNum;
@@ -119,7 +126,9 @@ async function tjGetPage(keyword, category) {
         .then(response => {
             let content = response.data;
             let $ = cheerio.load(content);
-            let pages = $('#page1 > table > tbody > tr > td > a:nth-last-child(2)').text();
+            let pages = $('#page1 > table > tbody > tr > td > a:nth-last-child(1)').text();
+            if (!pages) pages = $('#page1 > table > tbody > tr > td > b:nth-last-child(1)').text();
+            if (!pages) pages = $('#page1 > table > tbody > tr > td > a:nth-last-child(2)').text();
             pageNum = parseInt(pages.replace(/[^0-9]/g, ''));
             return pageNum;
         });
