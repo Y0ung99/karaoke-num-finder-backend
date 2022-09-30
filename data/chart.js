@@ -20,7 +20,9 @@ export async function popular(country, company) {
         return songs;
     } else if (company === 'taejin') {
         country = tjSelectCountry(country);
-        let url = `${TAEJIN_BASE}?strType=${country}`;
+        const today = new Date();
+        const aMonthAgo = new Date(new Date().setMonth(new Date().getMonth() - 1));
+        let url = `${TAEJIN_BASE}?strType=${country}&SYY=${aMonthAgo.getFullYear()}&SMM=${aMonthAgo.getMonth() + 1}&SDD=${aMonthAgo.getDate()}&EYY=${today.getFullYear()}&EMM=${today.getMonth() + 1}&EDD=${today.getDate()}`;
         const songs = await tjGetPopular(url);
         songs.shift();
         return songs;
