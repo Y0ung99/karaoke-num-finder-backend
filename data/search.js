@@ -22,7 +22,6 @@ export async function search(text, company, option) {
         }
         return Promise.all(urls)
         .then(result => {
-            console.log(result);
             return _.uniqBy(result.flat(2), 'num');
         });
 
@@ -106,7 +105,6 @@ async function kyGetPage(keyword, category) {
         if (pages.length === 2 && option === 1) {
             option = 0;
         }
-        console.log(pages.length);
         const pageNum = pages[option].replace(/[^0-9]/g, '');
         return Math.ceil(parseInt(pageNum) / 20);
     });
@@ -115,7 +113,6 @@ async function kyGetPage(keyword, category) {
 async function tjGetPage(keyword, category) {
     let page = 1;
     const BASE = 'https://www.tjmedia.com/tjsong/song_search_list.asp';
-    console.log('category', category);
     while(true) {
         let url = `${BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&searchOrderType=&searchOrderItem=&intPage=${page}`;
         let pageNum;
