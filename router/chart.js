@@ -8,6 +8,6 @@ import * as chartController from '../controller/chart.js';
 const router = express.Router();
 
 router.post('/popular/:country', chartController.popular);
-router.post('/new/:country', chartController.newsong);
+router.post('/new', chartController.newsong);
 
 export default router;

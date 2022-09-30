@@ -9,6 +9,6 @@ export async function popular(req, res) {
 
 export async function newsong(req, res) {
     const company = req.body.company;
-    const songs = await chartRepository.newsong(req.params.country, company);
+    const songs = await chartRepository.newsong(company);
     songs ? res.status(200).json(songs) : res.sendStatus(404);
 }
