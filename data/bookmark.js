@@ -1,35 +1,44 @@
-let bookmarks = [
-    {   
-        id: 1,
-        username: 'Dongyoung',
-        bookmark: [],
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db/database.js';
+import { User } from './auth.js';
+
+export const Bookmark = sequelize.define('bookmark', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        primaryKey: true,
     },
-    {
-        id: 2,
-        username: 'DDDDD',
-        bookmark: [],
+    num: {
+        type: DataTypes.STRING(45),
+        allowNull: false,
+    },
+    title: {
+        type: DataTypes.STRING(45),
+        allowNull: false,
+    },
+    singer: {
+        type: DataTypes.STRING(45),
+        allowNull: false,
     }
-]
+}, {timestamps: false});
+
+Bookmark.belongsTo(User);
+
 export async function fetchSong(id) {
-    const index = bookmarks.findIndex(user => user.id === id);
-    return [...bookmarks[index].bookmark];
+    const fetched = await Bookmark.findAll({where: {userId: id}});
+    return fetched;
 }
 
 export async function addSong(data, id) {
-    const {num, title, singer} = data;
-    const info = {num, title, singer};
-    const index = bookmarks.findIndex(user => user.id === id);
-    const isExist = bookmarks[index].bookmark.findIndex(user => user.num === info.num);
-    if (isExist != -1) return;
-    bookmarks[index].bookmark.push(info);
-    console.log(bookmarks[index].bookmark);
-    return bookmarks[index].bookmark;
+    const fetched = await fetchSong(id);
+    const isExist = fetched.findIndex(song => song.num === data.num);
+    if (isExist !== -1) return;
+    return Bookmark.create({...data, userId: id}).then(data => data.dataValues);
 }
 
 export async function deleteSong(data, id) {
-    const {num} = data;
-    const index = bookmarks.findIndex(user => user.id === id);
-    const newbookmark = [...bookmarks[index].bookmark.filter(song => song.num !== num)];
-    bookmarks[index].bookmark = newbookmark;
-    return bookmarks[index].bookmark;
+    return Bookmark.destroy({
+        where: {userId: id},
+    });
 }

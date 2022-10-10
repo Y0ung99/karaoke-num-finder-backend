@@ -14,7 +14,9 @@
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
-    "nodemon": "^2.0.19"
+    "mysql2": "^2.3.3",
+    "nodemon": "^2.0.19",
+    "sequelize": "^6.24.0"
   },
   "scripts": {
     "start": "node server.js"
@@ -22,7 +24,6 @@
   "name": "karaoke-backend",
   "version": "1.0.0",
   "main": "server.js",
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Y0ung99/karaoke-num-finder-backend.git"

@@ -1,30 +1,39 @@
-let users = [
-    {   
-        id: 1,
-        username: 'Dongyoung',
-        password: '$2b$12$pBqKTuvf3Jj/2af0ARN0ruVVfLouxkw60ZrJ5S4aimrSd2Cl2AsiS',
-        name: 'DY',
-        email: 'color54642@gmail.com',
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../db/database.js';
+
+export const User = sequelize.define('user', {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+        allowNull: false,
     },
-    {
-        id: 2,
-        username: 'DDDDD',
-        password: '$2b$12$pBqKTuvf3Jj/2af0ARN0ruVVfLouxkw60ZrJ5S4aimrSd2Cl2AsiS',
-        name: 'DDDDD',
-        email: 'color542@gmail.com',
+    username: {
+        type: DataTypes.STRING(45),
+        allowNull: false,
+    },
+    password: {
+        type: DataTypes.STRING(128)
+    },
+    name: {
+        type: DataTypes.STRING(128),
+        allowNull: false,
+    },
+    email: {
+        type: DataTypes.TEXT,
+        allowNull: false,
     }
-]
+}, 
+{timestamps: false});
 
 export async function findByUsername(username) {
-    return users.find(user => user.username === username);    
+    return User.findOne({where: {username}});  
 }
 
 export async function findById(id) {
-    return users.find(user => user.id === id);
+    return User.findByPk(id);
 }
 
 export async function createUser(user) {
-    const created = {...user, id: users.length + 1};
-    users.push(created);
-    return created.id; 
+    return User.create(user).then(data => data.dataValues.id);
 }

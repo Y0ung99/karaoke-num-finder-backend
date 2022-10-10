@@ -8,6 +8,7 @@ import searchRoute from './router/search.js';
 import authRoute from './router/auth.js';
 import chartRoute from './router/chart.js';
 import bookmarkRoute from './router/bookmark.js';
+import { sequelize } from './db/database.js';
 
 const server = express();
 const corsOption = {
@@ -24,7 +25,9 @@ server.use('/auth', authRoute);
 server.use('/chart', chartRoute);
 server.use('/bookmark', bookmarkRoute);
 
+await sequelize.sync();
 server.listen(8080);
+
 
 server.use((req, res, next) => {
     res.sendStatus(404);
