@@ -9,10 +9,11 @@ import authRoute from './router/auth.js';
 import chartRoute from './router/chart.js';
 import bookmarkRoute from './router/bookmark.js';
 import { sequelize } from './db/database.js';
+import { config } from './config.js';
 
 const server = express();
 const corsOption = {
-    origin: '*',
+    origin: config.cors.allowedOrigin,
     optionsSuccessStatus: 200,
 };
 server.use(express.json());
@@ -25,8 +26,11 @@ server.use('/auth', authRoute);
 server.use('/chart', chartRoute);
 server.use('/bookmark', bookmarkRoute);
 
-await sequelize.sync();
-server.listen(8080);
+sequelize.sync().then(() => {
+    console.log(`server is started ${new Date()}`);
+    const ser = server.listen(config.port);
+});
+
 
 
 server.use((req, res, next) => {
