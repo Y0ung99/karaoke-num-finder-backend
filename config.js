@@ -1,9 +1,13 @@
 import dotenv from 'dotenv';
 
-const env = dotenv.config();
+dotenv.config();
 
-function required(name) {
-    return env.parsed[name];
+function required(key, defalutValue = undefined) {
+    const value = process.env[key] || defalutValue;
+    if (value == null) {
+        throw new Error(`Key ${key} is undefined`);
+    }
+    return value;
 }
 
 export const config = {
