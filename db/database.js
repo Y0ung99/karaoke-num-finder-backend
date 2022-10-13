@@ -7,10 +7,10 @@ export const sequelize = new Sequelize(database, user, password, {
     port,
     dialect: 'mysql',
     logging: false,
-    // dialectOptions: {
-    //     ssl: {
-    //         require: true,
-    //         rejectUnauthorized: false,
-    //     },
-    // },
+    dialectOptions: {
+        ssl: {
+            require: true,
+            rejectUnauthorized: false,
+        },
+    },
 });
