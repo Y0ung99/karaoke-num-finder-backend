@@ -35,6 +35,5 @@ export async function getMaxPage(req, res) {
         const category = option === 'title' ? 1 : 2;
         pageNum = await searchRepository.tjGetPage(keyword, category);
     }
-
     pageNum ? res.status(200).json({pageNum}) : res.sendStatus(404);
 }

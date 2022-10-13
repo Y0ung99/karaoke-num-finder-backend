@@ -117,10 +117,11 @@ export async function kyGetPage_Singer(keyword) {
 }
 
 export async function tjGetPage(keyword, category) {
+    let final = 0;
     let page = 1;
     const BASE = 'https://www.tjmedia.com/tjsong/song_search_list.asp';
     while(true) {
-        let url = `${BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&strSize01=100&searchOrderType=&searchOrderItem=&intPage=${page}`;
+        let url = `${BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&strSize0${category}=100&searchOrderType=&searchOrderItem=&intPage=${page}`;
         let pageNum;
         page = await axios({
             url,
@@ -142,6 +143,7 @@ export async function tjGetPage(keyword, category) {
         }
     }
     return page;
+
 }
 
 export function kyGetURLs_Singer(page, keyword) {
@@ -155,6 +157,6 @@ export function kyGetURLs_Title(page, keyword) {
 }
 
 export function tjGetURLs(page, keyword, category) {
-    const url = `${TAEJIN_BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&strSize01=100&searchOrderType=&searchOrderItem=&intPage=${page}`;
+    const url = `${TAEJIN_BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&strSize0${category}=100&searchOrderType=&searchOrderItem=&intPage=${page}`;
     return url;
 }
