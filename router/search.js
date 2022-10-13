@@ -4,6 +4,8 @@ import * as searchController from '../controller/search.js';
 
 const router = express.Router();
 
+router.post('/maxpage', searchController.getMaxPage);
 router.post('/', searchController.search);
+
 
 export default router;

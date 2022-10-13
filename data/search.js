@@ -5,44 +5,7 @@ import _ from 'lodash';
 const KUMYOUNG_BASE = 'https://kygabang.com/chart/search_list_more.php';
 const TAEJIN_BASE = 'https://www.tjmedia.com/tjsong/song_search_list.asp';
 
-export async function search(text, company, option) {
-    let url;
-    let category;
-    let urls = [];
-    let keyword = encodeURI(text);
-
-    if (company === 'kumyoung') {
-        category = option === 'title' ? 2 : 7; 
-        const maxPage = await kyGetPage(keyword, category);
-        for (let page = 1; page <= maxPage; page++) {
-            url = `${KUMYOUNG_BASE}?page=${page}&val=${keyword}&mode=SongSearch&gb=${category}`;
-            urls.push(new Promise((resolve) => {
-                resolve(kyGetHTML(url));
-            }));
-        }
-        return Promise.all(urls)
-        .then(result => {
-            return _.uniqBy(result.flat(2), 'num');
-        });
-
-    } else if (company === 'taejin') {
-        category = option === 'title' ? 1 : 2;
-        const maxPage = await tjGetPage(keyword, category);
-        for (let page = 1; page <= maxPage; page++) {
-            url = `${TAEJIN_BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&searchOrderType=&searchOrderItem=&intPage=${page}`;
-            urls.push(new Promise((resolve) => {
-                resolve(tjGetHTML(url));
-            }));
-        }
-        return Promise.all(urls)
-        .then(result => {
-            return _.uniqBy(result.flat(2), 'num');
-        });
-
-    } else return new Error('올바르지 않은 값');
-}
-
-async function kyGetHTML(url) {
+export async function kyGetHTML(url) {
     return axios({
         url,
         method: 'GET',
@@ -66,7 +29,7 @@ async function kyGetHTML(url) {
     });
 }
 
-async function tjGetHTML(url) {
+export async function tjGetHTML(url) {
     return axios({
         url,
         method: 'GET',
@@ -89,7 +52,7 @@ async function tjGetHTML(url) {
     });
 }
 
-async function kyGetPage(keyword, category) {
+export async function kyGetPage(keyword, category) {
     const BASE = 'https://kygabang.com/chart/search_list.php';
     const url = `${BASE}?mode=SongSearch&val=${keyword}`;
     let option = category === 2 ? 0 : 1;
@@ -110,7 +73,7 @@ async function kyGetPage(keyword, category) {
     });
 }
 
-async function tjGetPage(keyword, category) {
+export async function tjGetPage(keyword, category) {
     let page = 1;
     const BASE = 'https://www.tjmedia.com/tjsong/song_search_list.asp';
     while(true) {
@@ -136,4 +99,14 @@ async function tjGetPage(keyword, category) {
         }
     }
     return page;
+}
+
+export function kyGetURLs(page, keyword, category) {
+    const url = `${KUMYOUNG_BASE}?page=${page}&val=${keyword}&mode=SongSearch&gb=${category}`;
+    return url;
+}
+
+export function tjGetURLs(page, keyword, category) {
+    const url = `${TAEJIN_BASE}?strType=${category}&natType=&strText=${keyword}&strCond=0&searchOrderType=&searchOrderItem=&intPage=${page}`;
+    return url;
 }
