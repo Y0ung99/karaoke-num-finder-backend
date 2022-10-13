@@ -5,7 +5,7 @@ const {host, user, port, database, password} = config.db;
 export const sequelize = new Sequelize(database, user, password, {
     host,
     port,
-    dialect: 'mysql',
+    dialect: 'postgres',
     logging: false,
     dialectOptions: {
         ssl: {
