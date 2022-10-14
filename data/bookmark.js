@@ -39,6 +39,9 @@ export async function addSong(data, id) {
 
 export async function deleteSong(data, id) {
     return Bookmark.destroy({
-        where: {userId: id},
+        where: {
+            userId: id,
+            num: data.num,
+        },
     });
 }
