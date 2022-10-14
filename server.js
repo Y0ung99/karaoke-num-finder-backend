@@ -42,7 +42,7 @@ server.use((error, req, res, next) => {
     res.sendStatus(500);
 });
 
-function interval(sec, func) {
-    func();
+async function interval(sec, func) {
+    await func();
     return setInterval(func, sec);
 }
