@@ -29,7 +29,7 @@ export async function newsong(req, res) {
 }
 
 export async function RefreshChartDB() {
-    Promise.all([
+    await Promise.all([
         TJchartRepository.tjRefreshNewDB(),
         TJchartRepository.tjRefreshPopularDB(), 
         KYchartRepository.kyRefreshNewDB(), 
