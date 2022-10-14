@@ -29,7 +29,7 @@ server.use('/bookmark', bookmarkRoute);
 
 sequelize.sync().then(() => {
     console.log(`server is started ${new Date()}`);
-    interval(86400000, RefreshChartDB);
+    interval(14400000, RefreshChartDB);
     const ser = server.listen(config.port);
 });
 
