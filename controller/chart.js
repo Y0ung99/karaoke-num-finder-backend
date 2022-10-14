@@ -29,11 +29,12 @@ export async function newsong(req, res) {
 }
 
 export async function RefreshChartDB() {
+    console.log('Start Popular, New DB Refreshed');
     await Promise.all([
         TJchartRepository.tjRefreshNewDB(),
         TJchartRepository.tjRefreshPopularDB(), 
         KYchartRepository.kyRefreshNewDB(), 
         KYchartRepository.kyRefreshPopularDB(),
     ]);
-    console.log('Popular, New DB Refreshed')
+    console.log('Finshed Popular, New DB Refreshed');
 }

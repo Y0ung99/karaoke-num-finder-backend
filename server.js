@@ -28,9 +28,9 @@ server.use('/chart', chartRoute);
 server.use('/bookmark', bookmarkRoute);
 
 sequelize.sync().then(() => {
-    console.log(`server is started ${new Date()}`);
     interval(14400000, RefreshChartDB);
     const ser = server.listen(config.port);
+    console.log(`Server is started ${new Date()}`);
 });
 
 server.use((req, res, next) => {
