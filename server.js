@@ -10,6 +10,7 @@ import chartRoute from './router/chart.js';
 import bookmarkRoute from './router/bookmark.js';
 import { sequelize } from './db/database.js';
 import { config } from './config.js';
+import { RefreshChartDB } from './controller/chart.js';
 
 const server = express();
 const corsOption = {
@@ -28,16 +29,20 @@ server.use('/bookmark', bookmarkRoute);
 
 sequelize.sync().then(() => {
     console.log(`server is started ${new Date()}`);
+    interval(86400000, RefreshChartDB);
     const ser = server.listen(config.port);
 });
 
-
-
 server.use((req, res, next) => {
     res.sendStatus(404);
-})
+});
 
 server.use((error, req, res, next) => {
     console.error(error);
     res.sendStatus(500);
-})
+});
+
+function interval(sec, func) {
+    func();
+    return setInterval(func, sec);
+}

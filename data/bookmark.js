@@ -14,11 +14,11 @@ export const Bookmark = sequelize.define('bookmark', {
         allowNull: false,
     },
     title: {
-        type: DataTypes.STRING(45),
+        type: DataTypes.TEXT('long'),
         allowNull: false,
     },
     singer: {
-        type: DataTypes.STRING(45),
+        type: DataTypes.TEXT('long'),
         allowNull: false,
     }
 }, {timestamps: false});
