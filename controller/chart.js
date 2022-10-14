@@ -8,7 +8,7 @@ export async function popular(req, res) {
     
     if (company == 'kumyoung') {
         songs = await KYchartRepository.popularFromDB(req.params.country);
-    } else if (company = 'taejin') {
+    } else if (company == 'taejin') {
         songs = await TJchartRepository.popularFromDB(req.params.country);
     }
 
