@@ -89,7 +89,6 @@ export async function kyGetPage_Title(keyword) {
         const pages = $('body > form > section > section > h3 > span').text().split(')');
 
         const pageNum = pages[0].replace(/[^0-9]/g, '');
-        console.log(Math.ceil(parseInt(pageNum) / 10));
         return Math.ceil(parseInt(pageNum) / 10);
     });
 }
@@ -111,7 +110,6 @@ export async function kyGetPage_Singer(keyword) {
             option = 0;
         }
         const pageNum = pages[option].replace(/[^0-9]/g, '');
-        console.log(Math.ceil(parseInt(pageNum) / 20));
         return Math.ceil(parseInt(pageNum) / 20);
     });
 }
